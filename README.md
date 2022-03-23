@@ -4,3 +4,4 @@ This is the code repository for the preprint "Towards a Comprehensive Evaluation
 - preprocessing: scripts that are used for preprocessing each dataset
 - experiments: scripts that are used for experiments, including the dimensionality reduction of each algorithm and the evaluation
 - figures: scripts that are used for figure creation
+- results: raw embeddings generated during the experiments
