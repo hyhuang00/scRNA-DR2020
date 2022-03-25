@@ -5,3 +5,4 @@ This is the code repository for the preprint "Towards a Comprehensive Evaluation
 - experiments: scripts that are used for experiments, including the dimensionality reduction of each algorithm and the evaluation
 - figures: scripts that are used for figure creation
 - results: raw embeddings generated during the experiments
+- results_extra: raw embeddings generated for figures, not necessarily being evaluated
