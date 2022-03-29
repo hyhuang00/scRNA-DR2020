@@ -9,7 +9,7 @@ from matplotlib.colors import ListedColormap
 # matplotlib.rc('text', usetex=True)
 # matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath}"]
 
-methods = ['t-SNE', 'LargeVis', 'UMAP', 'TriMap', 'PaCMAP']
+methods = ['t-SNE', 'LargeVis', 'UMAP', 'TriMap', 'PaCMAP', 'PHATE']
 results = np.load('./data_extra/pca_mammoth.npy')
 tsne = [np.load('../../output_extra/mammoth_t-SNE_perp10.npy')[0],
         np.load('../../output_extra/mammoth_t-SNE_perp15.npy')[0],
@@ -23,6 +23,7 @@ trimap = [np.load('../../output_extra/mammoth_TriMap_perp10.npy')[0],
 artsne = np.load('../../output/mammoth_art-SNE.npy')[0]
 fa2 = np.load('../../output/mammoth_ForceAtlas2.npy')[0]
 PaCMAP = np.load('../../output/mammoth_PaCMAP.npy')[0]
+PHATE = np.load('../../output/mammoth_PHATE.npy')[0]
 tsne_list = ['10', '15', '30']
 umap_list = ['10', '15', '30']
 trimap_list = ['10', '15', '30']
@@ -97,11 +98,11 @@ big_title = 24
 small_title = 20
 
 # General Figure
-fig = plt.figure(figsize=(15, 15.5), dpi=250)
-gs = fig.add_gridspec(7, 6, height_ratios=[3, 3, 3, 0.25, 3, 0.25, 3])
+fig = plt.figure(figsize=(18, 15.5), dpi=250)
+gs = fig.add_gridspec(7, 7, height_ratios=[3, 3, 3, 0.25, 3, 0.25, 3])
 
 # Mammoth
-ax3d = fig.add_subplot(gs[0:2, 0:3], projection='3d')
+ax3d = fig.add_subplot(gs[0:2, 0:4], projection='3d')
 X, y = data_prep('mammoth')
 
 ax3d.scatter(-X[:, 0], X[:, 2],
@@ -114,7 +115,7 @@ ax3d.title.set_fontsize(big_title)
 plt.draw()
 
 for i in range(3):
-    fax = fig.add_subplot(gs[i, 3])
+    fax = fig.add_subplot(gs[i, 4])
     mam = tsne[i]
     fax.axis('off')
     fax.set_aspect('equal', adjustable='datalim') # set aspect to equal
@@ -129,7 +130,7 @@ for i in range(3):
     if i == 0:
         fax.text(-0.1, 1, 'b', fontsize=20, weight='bold', ha='center', va='center', transform=fax.transAxes)
 
-    fax = fig.add_subplot(gs[i, 4])
+    fax = fig.add_subplot(gs[i, 5])
     mam = umap[i]
     fax.axis('off')
     fax.set_aspect('equal', adjustable='datalim') # set aspect to equal
@@ -140,7 +141,7 @@ for i in range(3):
         fax.set_title(f'UMAP ({umap_list[i]})', fontweight="bold")
     fax.title.set_fontsize(small_title)
 
-    fax = fig.add_subplot(gs[i, 5])
+    fax = fig.add_subplot(gs[i, 6])
     mam = trimap[i]
     fax.set_aspect('equal', adjustable='datalim') # set aspect to equal
     fax.scatter(mam[:, 0], mam[:, 1], s=0.02, c=y, cmap='viridis')
@@ -174,23 +175,30 @@ fax.scatter(x=mam[:, 0], y=mam[:, 1], s=0.02, c=y, cmap='viridis')
 fax.axis('off')
 fax.set_title('PaCMAP')
 fax.title.set_fontsize(small_title)
-# plt.tight_layout()
+
+fax = fig.add_subplot(gs[2, 3])
+mam = PHATE
+fax.set_aspect('equal', adjustable='datalim') # set aspect to equal
+fax.scatter(x=mam[:, 0], y=mam[:, 1], s=0.02, c=y, cmap='viridis')
+fax.axis('off')
+fax.set_title('PHATE')
+fax.title.set_fontsize(small_title)
 
 
 # Lineage
-X = np.load('/usr/xtmp/hyhuang/MNIST/lineage_dataset.npy', allow_pickle=True)
-y = np.load('/usr/xtmp/hyhuang/MNIST/lineage_label.npy', allow_pickle=True)
-Z_fa = np.load('/home/home1/hh219/Bio_PaCMAP/output/lineage_ForceAtlas2.npy', allow_pickle=True)[0]
-Z_ts = np.load('/home/home1/hh219/Bio_PaCMAP/output/lineage_t-SNE.npy', allow_pickle=True)[0]
-Z_arts = np.load('/home/home1/hh219/Bio_PaCMAP/output/lineage_art-SNE.npy', allow_pickle=True)[0]
-Z_um = np.load('/home/home1/hh219/Bio_PaCMAP/output/lineage_UMAP.npy', allow_pickle=True)[0]
-Z_tr = np.load('/home/home1/hh219/Bio_PaCMAP/output/lineage_TriMap.npy', allow_pickle=True)[0]
-Z_pc = np.load('/home/home1/hh219/Bio_PaCMAP/output/lineage_PaCMAP.npy', allow_pickle=True)[0]
-Zs = [Z_fa, Z_ts, Z_arts, Z_um, Z_tr, Z_pc]
-names = ['ForceAtlas2', 't-SNE', 'art-SNE', 'UMAP', 'TriMAP', 'PaCMAP']
-# fig, ax = plt.subplots(2, 3, figsize=(12, 8))
-# ax = ax.flatten()
-for i in range(6):
+X = np.load('../../data/lineage_dataset.npy', allow_pickle=True)
+y = np.load('../../data/lineage_label.npy', allow_pickle=True)
+Z_fa = np.load('../../output/lineage_ForceAtlas2.npy', allow_pickle=True)[0]
+Z_ts = np.load('../../output/lineage_t-SNE.npy', allow_pickle=True)[0]
+Z_arts = np.load('../../output/lineage_art-SNE.npy', allow_pickle=True)[0]
+Z_um = np.load('../../output/lineage_UMAP.npy', allow_pickle=True)[0]
+Z_tr = np.load('../../output/lineage_TriMap.npy', allow_pickle=True)[0]
+Z_pc = np.load('../../output/lineage_PaCMAP.npy', allow_pickle=True)[0]
+Z_ph = np.load('../../output/lineage_PHATE.npy', allow_pickle=True)[0]
+
+Zs = [Z_fa, Z_ts, Z_arts, Z_um, Z_tr, Z_pc, Z_ph]
+names = ['ForceAtlas2', 't-SNE', 'art-SNE', 'UMAP', 'TriMAP', 'PaCMAP', 'PHATE']
+for i in range(7):
     fax = fig.add_subplot(gs[4, i])
     fax.set_aspect('equal', adjustable='datalim') # set aspect to equal
     fax.scatter(Zs[i][:, 0], Zs[i][:, 1], c=y, cmap='viridis', s=0.06)
@@ -200,14 +208,17 @@ for i in range(6):
         fax.text(-0.1, 1, 'c', fontsize=20, weight='bold', ha='center', va='center', transform=fax.transAxes)
 
 # Hierarchical
-X = np.load('/usr/xtmp/hyhuang/MNIST/hierarchical_threelayer_dataset.npy', allow_pickle=True)
-y = np.load("/usr/xtmp/hyhuang/MNIST/hierarchical_threelayer_label.npy", allow_pickle=True)
-Z_fa = np.load('/home/home1/hh219/Bio_PaCMAP/output/hierarchical_three_ForceAtlas2.npy', allow_pickle=True)[0]
-Z_ts = np.load('/home/home1/hh219/Bio_PaCMAP/output/hierarchical_three_t-SNE.npy', allow_pickle=True)[0]
-Z_arts = np.load('/home/home1/hh219/Bio_PaCMAP/output/hierarchical_three_art-SNE.npy', allow_pickle=True)[0]
-Z_um = np.load('/home/home1/hh219/Bio_PaCMAP/output/hierarchical_three_UMAP.npy', allow_pickle=True)[0]
-Z_tr = np.load('/home/home1/hh219/Bio_PaCMAP/output/hierarchical_three_TriMap.npy', allow_pickle=True)[0]
-Z_pc = np.load('/home/home1/hh219/Bio_PaCMAP/output/hierarchical_three_PaCMAP.npy', allow_pickle=True)[0]
+X = np.load('../../data/hierarchical_threelayer_dataset.npy', allow_pickle=True)
+y = np.load("../../data/hierarchical_threelayer_label.npy", allow_pickle=True)
+Z_fa = np.load('../../output/hierarchical_three_ForceAtlas2.npy', allow_pickle=True)[0]
+Z_ts = np.load('../../output/hierarchical_three_t-SNE.npy', allow_pickle=True)[0]
+Z_arts = np.load('../../output/hierarchical_three_art-SNE.npy', allow_pickle=True)[0]
+Z_um = np.load('../../output/hierarchical_three_UMAP.npy', allow_pickle=True)[0]
+Z_tr = np.load('../../output/hierarchical_three_TriMap.npy', allow_pickle=True)[0]
+Z_pc = np.load('../../output/hierarchical_three_PaCMAP.npy', allow_pickle=True)[0]
+Z_ph = np.load('../../output/hierarchical_three_PHATE.npy', allow_pickle=True)[0]
+
+Zs = [Z_fa, Z_ts, Z_arts, Z_um, Z_tr, Z_pc, Z_ph]
 
 a = sns.color_palette("Reds", n_colors=10).as_hex()
 b = sns.color_palette("Blues", n_colors=10).as_hex()
@@ -226,9 +237,8 @@ for i in range(25):
         second_layer_clist.append(cm[i])
 second_cmap = ListedColormap(second_layer_clist)
 
-Zs = [Z_fa, Z_ts, Z_arts, Z_um, Z_tr, Z_pc]
 # names = ['ForceAtlas2', 't-SNE', 'art-SNE', 'UMAP', 'TriMAP', 'PaCMAP']
-for i in range(6):
+for i in range(7):
     fax = fig.add_subplot(gs[6, i])
     fax.set_aspect('equal', adjustable='datalim') # set aspect to equal
     fax.scatter(Zs[i][:, 0], Zs[i][:, 1], c=y, cmap=second_cmap, s=0.06)
