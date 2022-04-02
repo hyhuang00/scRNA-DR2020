@@ -1,0 +1,83 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# This Notebook records the preprocessing steps of Stuart et al. dataset and Kazer et al. dataset using package Seurat.
+
+```{r}
+require(WGCNA)
+require(flashClust)
+require(Hmisc)
+require(dplyr)
+library(edgeR)
+library(limma)
+library(Glimma)
+library(org.Mm.eg.db)
+library(gplots)
+library(RColorBrewer)
+library(NMF)
+```
+
+## Stuart et al. Dataset:
+
+```{r}
+HIVdata <- read.delim("raw_counts_matrix.txt", stringsAsFactors = FALSE)
+```
+
+```{r}
+head(HIVdata)
+```
+
+```{r}
+HIVmetadata <- read.delim("HIV_metadata.txt", stringsAsFactors = TRUE)
+```
+
+```{r}
+countdata = HIVdata[, -1]
+rownames(countdata) <- HIVdata[,1]
+countdata[0:5, 0:10]
+```
+
+```{r}
+metadata = HIVmetadata[-1, ]
+metadata[0:5, ]
+```
+
+```{r}
+library(dplyr)
+library(Seurat)
+hiv <- CreateSeuratObject(counts = countdata, project = "HIVdata")
+hiv
+```
+
+```{r}
+label <- paste(metadata$cell_type__ontology_label)
+label = factor(label)
+library(plyr)
+label_ = revalue(label, c("cytotoxic T cell"="CTLs", "dendritic cell"="DCs", "natural killer cell"="NK cell"))
+levels(label_)
+```
+
+```{r}
+hiv <- NormalizeData(hiv, normalization.method = "LogNormalize", scale.factor = 10000) %>% 
+  FindVariableFeatures(selection.method = "vst", nfeatures = 2000) %>% 
+  ScaleData() %>% 
+  RunPCA()
+```
+
+## Kazer et al. Dataset:
+
+```{r}
+library(Seurat)
+library(SeuratData)
+library(cowplot)
+library(dplyr)
+InstallData("bmcite")
+bm <- LoadData(ds = "bmcite")
+DefaultAssay(bm) <- 'RNA'
+bm <- NormalizeData(bm, normalization.method = "LogNormalize", scale.factor = 10000) %>% 
+  FindVariableFeatures(selection.method = "vst", nfeatures = 2000) %>% 
+  ScaleData() %>% 
+  RunPCA()
+```
