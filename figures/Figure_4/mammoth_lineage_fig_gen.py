@@ -98,7 +98,7 @@ big_title = 24
 small_title = 20
 
 # General Figure
-fig = plt.figure(figsize=(18, 15.5), dpi=250)
+fig = plt.figure(figsize=(18, 15.5), dpi=300)
 gs = fig.add_gridspec(7, 7, height_ratios=[3, 3, 3, 0.25, 3, 0.25, 3])
 
 # Mammoth
